@@ -196,7 +196,11 @@ class MuseumController extends Controller
             ], 500);
         }
     }
+    
 
+
+
+    
     /**
      * Get museum statistics
      * GET /api/museums/statistics
