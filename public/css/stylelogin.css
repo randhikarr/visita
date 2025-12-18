@@ -1,0 +1,169 @@
+/* ===========================
+   GLOBAL
+=========================== */
+.vl-body {
+    margin: 0;
+    padding: 0;
+    background: #f3e7df; /* soft beige seperti desain */
+    font-family: "Poppins", sans-serif;
+}
+
+/* ===========================
+   CONTAINER UTAMA
+=========================== */
+.vl-login-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    padding: 0 60px;
+    box-sizing: border-box;
+}
+
+/* ===========================
+   BAGIAN KIRI (GAMBAR)
+=========================== */
+.vl-left-side {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.vl-visita-img {
+    width: 480px;
+    height: auto;
+    object-fit: contain;
+}
+
+/* ===========================
+   BAGIAN KANAN (FORM)
+=========================== */
+.vl-right-side {
+    flex: 1;
+    max-width: 360px;
+    text-align: center;
+}
+
+.vl-welcome {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.vl-subtitle {
+    font-size: 13px;
+    color: #a07b6a;
+    margin-bottom: 25px;
+}
+
+/* ===========================
+   INPUT FORM
+=========================== */
+.vl-input-group {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.vl-input-group input {
+    width: 100%;
+    padding: 12px 15px 12px 40px;
+    border: none;
+    background: #ffffff;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.vl-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.5;
+}
+
+/* ===========================
+   FORGOT PASSWORD
+=========================== */
+.vl-forgot {
+    text-align: right;
+    margin-bottom: 18px;
+}
+
+.vl-forgot a {
+    font-size: 12px;
+    color: #5a5552;
+    text-decoration: none;
+}
+
+/* ===========================
+   BUTTON LOGIN
+=========================== */
+.vl-btn-login {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background: #2e4553;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    margin-bottom: 18px;
+}
+
+/* ===========================
+   DIVIDER
+=========================== */
+.vl-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #6d6358;
+    margin-bottom: 18px;
+}
+
+.vl-divider span {
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: #b5ada4;
+    margin: 0 8px;
+}
+
+/* ===========================
+   SOCIAL BUTTONS
+=========================== */
+.vl-btn-social {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1.5px solid #c7c7c7;
+    border-radius: 6px;
+    background: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.vl-btn-social img {
+    width: 18px;
+}
+
+/* ===========================
+   SIGN UP TEXT
+=========================== */
+.vl-signup-text {
+    margin-top: 15px;
+    font-size: 13px;
+    color: #5a4f47;
+}
+
+.vl-signup-text a {
+    color: #d7745a;
+    text-decoration: none;
+}

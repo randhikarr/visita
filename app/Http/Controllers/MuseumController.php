@@ -201,6 +201,8 @@ class MuseumController extends Controller
 
 
     
+
+    
     /**
      * Get museum statistics
      * GET /api/museums/statistics
