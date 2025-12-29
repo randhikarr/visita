@@ -1,6 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\DashboardController;
+
+// ============================================
+// PUBLIC ROUTES (Tidak perlu login)
+// ============================================
 
 // Halaman Utama
 Route::get('/', function () {
@@ -51,3 +57,34 @@ Route::get('/blog', function () {
 Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
+
+// ============================================
+// ADMIN ROUTES
+// ============================================
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    
+    // Admin Login (untuk yang belum login)
+    Route::middleware('guest:admin')->group(function () {
+        Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+        Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+    });
+
+    // Admin Protected Routes (harus login sebagai admin)
+    Route::middleware('admin.auth')->group(function () {
+        // Logout
+        Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+        
+        // Dashboard
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        
+        // Museum Management (CRUD)
+        Route::get('/museums', [DashboardController::class, 'museums'])->name('museums');
+        Route::get('/museums/create', [DashboardController::class, 'createMuseum'])->name('museums.create');
+        Route::post('/museums', [DashboardController::class, 'storeMuseum'])->name('museums.store');
+        Route::get('/museums/{id}/edit', [DashboardController::class, 'editMuseum'])->name('museums.edit');
+        Route::put('/museums/{id}', [DashboardController::class, 'updateMuseum'])->name('museums.update');
+        Route::delete('/museums/{id}', [DashboardController::class, 'deleteMuseum'])->name('museums.delete');
+        
+    });
+});
