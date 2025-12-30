@@ -85,6 +85,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/museums/{id}/edit', [DashboardController::class, 'editMuseum'])->name('museums.edit');
         Route::put('/museums/{id}', [DashboardController::class, 'updateMuseum'])->name('museums.update');
         Route::delete('/museums/{id}', [DashboardController::class, 'deleteMuseum'])->name('museums.delete');
-        
     });
 });
