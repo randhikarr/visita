@@ -24,7 +24,42 @@
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             margin-top: 20px;
+            position: relative;
         }
+        
+        /* Locate Me Button */
+        .locate-me-btn {
+            position: absolute;
+            top: 80px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 12px 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-weight: 600;
+            color: #667eea;
+            transition: all 0.3s;
+        }
+        
+        .locate-me-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .locate-me-btn i {
+            margin-right: 5px;
+        }
+        
+        /* User Location Marker Style */
+        .user-marker {
+            width: 40px !important;
+            height: 40px !important;
+        }
+        
         .museum-list {
             margin-top: 30px;
         }
@@ -99,7 +134,12 @@
             
             <!-- Map -->
             <div class="map_main_lokasi mt-4">
-                <div id="map"></div>
+                <div id="map">
+                    <!-- Locate Me Button -->
+                    <button class="locate-me-btn" onclick="getUserLocation()" title="Tampilkan lokasi saya">
+                        <i class="fa fa-crosshairs"></i> Lokasi Saya
+                    </button>
+                </div>
             </div>
 
             <!-- Museum List -->
@@ -164,6 +204,8 @@
         let map;
         let markers = [];
         let museums = [];
+        let userMarker = null;
+        let userLocation = null;
 
         // Initialize Map
         function initMap() {
@@ -231,7 +273,13 @@
                         <p style="margin: 5px 0; font-size: 13px;"><strong>📍 Alamat:</strong><br>${museum.alamat || 'Tidak tersedia'}</p>
                         <p style="margin: 5px 0; font-size: 13px;"><strong>🕐 Jam:</strong><br>${museum.jam_operasional || 'Tidak tersedia'}</p>
                         <p style="margin: 5px 0; font-size: 13px;"><strong>🎫 Tiket:</strong> ${museum.harga_tiket || 'Tidak tersedia'}</p>
-                        <a href="{{ route('museum') }}" style="color: #667eea; text-decoration: none; font-weight: 600; font-size: 13px;">Lihat Detail →</a>
+                        <div style="margin-top: 10px; display: flex; gap: 10px;">
+                            <a href="{{ route('museum') }}" style="color: #667eea; text-decoration: none; font-weight: 600; font-size: 13px;">Lihat Detail →</a>
+                            <a href="#" onclick="openGoogleMaps(${lat}, ${lng}, '${museum.nama_museum.replace(/'/g, "\\'")}'); return false;" 
+                               style="color: #34a853; text-decoration: none; font-weight: 600; font-size: 13px;">
+                               <i class="fa fa-map-marker"></i> Petunjuk Arah
+                            </a>
+                        </div>
                     </div>
                 `;
 
@@ -260,6 +308,10 @@
                         <p><i class="fa fa-map-marker"></i> ${museum.alamat || 'Alamat tidak tersedia'}</p>
                         <p><i class="fa fa-clock-o"></i> ${museum.jam_operasional || 'Jam tidak tersedia'}</p>
                         <p><i class="fa fa-ticket"></i> ${museum.harga_tiket || 'Harga tidak tersedia'}</p>
+                        <a href="#" onclick="openGoogleMaps(${museum.latitude}, ${museum.longitude}, '${museum.nama_museum.replace(/'/g, "\\'")}'); return false;" 
+                           style="color: #34a853; text-decoration: none; font-weight: 600; font-size: 13px; margin-top: 5px; display: inline-block;">
+                           <i class="fa fa-map-marker"></i> Buka di Google Maps
+                        </a>
                     </div>
                 `;
             });
@@ -302,6 +354,160 @@
             if (filtered.length === 0) {
                 document.getElementById('museum-list-container').innerHTML = 
                     '<p class="text-center">Tidak ada museum yang cocok dengan pencarian.</p>';
+            }
+        }
+        
+        // Get User's Current Location
+        function getUserLocation() {
+            if (!navigator.geolocation) {
+                alert('Geolocation tidak didukung oleh browser Anda');
+                return;
+            }
+            
+            const btn = document.querySelector('.locate-me-btn');
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Mencari...';
+            btn.disabled = true;
+            
+            navigator.geolocation.getCurrentPosition(
+                // Success callback
+                function(position) {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    // Remove old user marker if exists
+                    if (userMarker) {
+                        map.removeLayer(userMarker);
+                    }
+                    
+                    // Create custom user location icon
+                    const userIcon = L.divIcon({
+                        className: 'user-marker',
+                        html: `<div style="background: #4285f4; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 4px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3); position: relative;">
+                            <i class="fa fa-user"></i>
+                            <div style="position: absolute; width: 80px; height: 80px; background: rgba(66, 133, 244, 0.2); border-radius: 50%; animation: pulse 2s infinite;"></div>
+                        </div>
+                        <style>
+                            @keyframes pulse {
+                                0% { transform: scale(0.8); opacity: 1; }
+                                100% { transform: scale(1.5); opacity: 0; }
+                            }
+                        </style>`,
+                        iconSize: [40, 40]
+                    });
+                    
+                    // Add user marker
+                    userMarker = L.marker([userLocation.lat, userLocation.lng], { icon: userIcon }).addTo(map);
+                    userMarker.bindPopup(`
+                        <div style="text-align: center; padding: 10px;">
+                            <strong>📍 Lokasi Anda</strong><br>
+                            <small style="color: #666;">Lat: ${userLocation.lat.toFixed(6)}, Lng: ${userLocation.lng.toFixed(6)}</small>
+                        </div>
+                    `).openPopup();
+                    
+                    // Center map to user location
+                    map.setView([userLocation.lat, userLocation.lng], 15);
+                    
+                    // Reset button
+                    btn.innerHTML = '<i class="fa fa-crosshairs"></i> Lokasi Saya';
+                    btn.disabled = false;
+                    
+                    // Show nearest museums
+                    showNearestMuseums();
+                },
+                // Error callback
+                function(error) {
+                    btn.innerHTML = '<i class="fa fa-crosshairs"></i> Lokasi Saya';
+                    btn.disabled = false;
+                    
+                    let errorMsg = 'Gagal mendapatkan lokasi';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMsg = "Izin lokasi ditolak. Silakan izinkan akses lokasi di browser Anda.";
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMsg = "Informasi lokasi tidak tersedia.";
+                            break;
+                        case error.TIMEOUT:
+                            errorMsg = "Request timeout. Coba lagi.";
+                            break;
+                    }
+                    alert(errorMsg);
+                }
+            );
+        }
+        
+        // Calculate distance between two points (Haversine formula)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius bumi dalam km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+        
+        // Show nearest museums from user location
+        function showNearestMuseums() {
+            if (!userLocation || museums.length === 0) return;
+            
+            // Calculate distance for each museum
+            const museumsWithDistance = museums.map(museum => ({
+                ...museum,
+                distance: calculateDistance(
+                    userLocation.lat, 
+                    userLocation.lng, 
+                    parseFloat(museum.latitude), 
+                    parseFloat(museum.longitude)
+                )
+            }));
+            
+            // Sort by distance
+            museumsWithDistance.sort((a, b) => a.distance - b.distance);
+            
+            // Update museum list with distance info
+            const container = document.getElementById('museum-list-container');
+            let html = '<h4 style="color: #667eea; margin-bottom: 15px;"><i class="fa fa-location-arrow"></i> Museum Terdekat dari Anda:</h4>';
+            
+            museumsWithDistance.slice(0, 5).forEach((museum, index) => {
+                const originalIndex = museums.findIndex(m => m.id === museum.id);
+                html += `
+                    <div class="museum-item" onclick="focusMuseum(${originalIndex})">
+                        <h5>
+                            ${index + 1}. ${museum.nama_museum}
+                            <span style="background: #667eea; color: white; padding: 3px 10px; border-radius: 15px; font-size: 11px; margin-left: 10px;">
+                                ${museum.distance.toFixed(1)} km
+                            </span>
+                        </h5>
+                        <p><i class="fa fa-map-marker"></i> ${museum.alamat || 'Alamat tidak tersedia'}</p>
+                        <p><i class="fa fa-clock-o"></i> ${museum.jam_operasional || 'Jam tidak tersedia'}</p>
+                        <p><i class="fa fa-ticket"></i> ${museum.harga_tiket || 'Harga tidak tersedia'}</p>
+                        <a href="#" onclick="openGoogleMaps(${museum.latitude}, ${museum.longitude}, '${museum.nama_museum.replace(/'/g, "\\'")}'); return false;" 
+                           style="color: #34a853; text-decoration: none; font-weight: 600; font-size: 13px; margin-top: 5px; display: inline-block;">
+                           <i class="fa fa-map-marker"></i> Petunjuk Arah (${museum.distance.toFixed(1)} km)
+                        </a>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Open Google Maps with directions
+        function openGoogleMaps(lat, lng, name) {
+            // If user location is available, show directions from user to museum
+            if (userLocation) {
+                // Google Maps directions URL
+                const url = `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${lat},${lng}&travelmode=driving`;
+                window.open(url, '_blank');
+            } else {
+                // Just open the location on Google Maps
+                const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+                window.open(url, '_blank');
             }
         }
 
