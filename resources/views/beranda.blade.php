@@ -263,58 +263,6 @@
          </div>
       </div>
       <!-- blog section end -->
-<!-- market section start -->
-      <div class="market_section layout_padding">
-         <div class="container">
-            <div class="row">
-               <div class="col-md-12">
-                  <h1 class="market_taital">Tambahkan Informasi</h1>
-               </div>
-            </div>
-            <div class="market_section_2">
-               <h4 class="market_text active"> <span class="padding10">Nama Museum </span></h4>
-                <form>
-                    <input type="text" class="search_text" placeholder="Isi data" name="Isi data">
-                </form>
-                <h4 class="market_text active"> <span class="padding10">Lokasi</span></h4>
-                <form>
-                    <input type="text" class="search_text" placeholder="Isi data" name="Isi data">
-                </form>
-                <h4 class="market_text active"> <span class="padding10">Deskripsi</span></h4>
-                <form>
-                    <input type="text" class="search_text" placeholder="Isi data" name="Isi data">
-                </form>
-                <div class="seemore_bt"><a href="#">Tambahkan</a></div>
-            </div>
-         </div>
-      </div>
-      <!-- market section end -->
-      <!-- contact section start -->
-      <div class="contact_section layout_padding">
-         <div class="container">
-            <div class="row">
-               <div class="col-md-12">
-                  <h1 class="contact_taital">Berikan Masukkan</h1>
-                  <p class="contact_text"> Berikan saran dan masukkan anda agar kami dapat meningkatkan layanan kami kedepannya. </p>
-               </div>
-            </div>
-            <div class="contact_section_2">
-               <div class="row">
-                  <div class="col-md-12 padding15">
-                     <form action="">
-                        <div class="mail_section_1 ">
-                           <input type="text" class="mail_text" placeholder="Name" name="Name">
-                           <input type="text" class="mail_text" placeholder="Phone Number" name="Phone Number"> 
-                           <input type="text" class="mail_text" placeholder="Email" name="Email">
-                           <textarea class="massage-bt" placeholder="Massage" rows="5" id="comment" name="Massage"></textarea>
-                           <div class="send_bt"><a href="#">Kirim</a></div>
-                        </div>
-                     </form>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
       <!-- contact section end -->
       <!-- footer section start -->
       <div class="footer_section layout_padding">
