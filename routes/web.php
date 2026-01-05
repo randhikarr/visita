@@ -35,7 +35,7 @@ Route::get('/login', function () {
 
 // Halaman Detail Museum
 Route::get('/museum/greyart', function () {
-    return view('greyart');
+    return view('pages/greyart');
 })->name('greyart');
 
 // Halaman Reservasi

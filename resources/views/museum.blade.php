@@ -1,9 +1,3 @@
-<?php
-// ============================================
-// FILE 2: resources/views/museum.blade.php
-// ============================================
-// Copy code di bawah ini ke file museum.blade.php
-?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,9 +13,89 @@
     <link href="https://fonts.googleapis.com/css?family=Baloo+Chettan+2:400,600,700|Poppins:400,600,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/jquery.mCustomScrollbar.min.css') }}">
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    
+    <style>
+        /* CSS untuk memastikan Pagination berada di bawah dan rapi */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap; /* Memaksa satu baris */
+            margin: 40px 0 60px 0; /* Memberi jarak bawah agar tidak menempel footer */
+            gap: 15px;
+            width: 100%;
+        }
+        
+        .pagination-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #ffae00 0%, #ffecae 100%);
+            color: white !important;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        
+        .pagination-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgb(255, 232, 138);
+        }
+        
+        .pagination-btn:disabled {
+            background: #e0e0e0;
+            color: #a0a0a0 !important;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .page-numbers {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .page-number {
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: white;
+            color: #ffb300;
+            border: 2px solid #ffc400;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .page-number.active {
+            background: linear-gradient(135deg, #ffd000 0%, #ffe571 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .pagination-info {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 14px;
+            padding: 0 10px;
+        }
+
+        /* Merapikan Search Box agar di tengah */
+        .search_form_wrapper {
+            max-width: 700px;
+            margin: 0 auto 40px auto;
+        }
+    </style>
 </head>
 <body>
-    <!-- Header -->
     <div class="header_section">
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -38,13 +112,11 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('lokasi') }}">Lokasi</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('tiket.saya') }}">Tiket Saya</a></li>
                     </ul>
-                    <a href="{{ route('login') }}" class="btn btn-brand ms-lg-3">LOG IN</a>
                 </div>
             </nav>
         </div>
     </div>
 
-    <!-- Museum List Section -->
     <div class="market_section layout_padding">
         <div class="container">
             <div class="row">
@@ -53,31 +125,26 @@
                 </div>
             </div>
 
-            <!-- Search Box -->
-            <div class="search_form_wrapper mb-4">
+            <div class="search_form_wrapper">
                 <form class="search_input_group" onsubmit="searchMuseum(event)"> 
                     <input type="text" id="searchInput" class="search_text_lokasi" placeholder="Cari museum..." name="search">
                     <button type="submit" class="search_bt_lokasi">Cari</button>
                 </form>
             </div>
 
-            <!-- Loading State -->
             <div id="loading" class="text-center py-5" style="display: none;">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
+                <div class="spinner-border text-primary" role="status"></div>
                 <p class="mt-3">Memuat data museum...</p>
             </div>
 
-            <!-- Error State -->
             <div id="error-message" class="alert alert-danger" style="display: none;"></div>
 
-            <!-- Museum List Container -->
             <div id="museums-container"></div>
+
+            <div id="pagination-container" class="pagination-container"></div>
         </div>
     </div>
 
-    <!-- Footer -->
     <div class="footer_section layout_padding margin_top90">
         <div class="container">
             <div class="row">
@@ -113,30 +180,23 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/popper.min.js') }}"></script>
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('js/jquery-3.0.0.min.js') }}"></script>
-    <script src="{{ asset('js/plugin.js') }}"></script>
-    <script src="{{ asset('js/jquery.mCustomScrollbar.concat.min.js') }}"></script>
-    <script src="{{ asset('js/custom.js') }}"></script>
 
     <script>
         const API_URL = 'http://localhost:8000/api/museums';
         let allMuseums = [];
+        let filteredMuseums = [];
+        let currentPage = 1;
+        const itemsPerPage = 6;
 
-        // Load museums saat halaman dimuat
         document.addEventListener('DOMContentLoaded', loadMuseums);
 
         async function loadMuseums() {
             const loading = document.getElementById('loading');
             const errorMessage = document.getElementById('error-message');
-            const container = document.getElementById('museums-container');
-
             loading.style.display = 'block';
-            errorMessage.style.display = 'none';
-            container.innerHTML = '';
 
             try {
                 const response = await fetch(API_URL);
@@ -144,79 +204,105 @@
 
                 if (result.status === 'success' && result.data.length > 0) {
                     allMuseums = result.data;
-                    displayMuseums(allMuseums);
+                    filteredMuseums = allMuseums;
+                    displayMuseums();
                 } else {
-                    container.innerHTML = '<p class="text-center">Tidak ada museum tersedia.</p>';
+                    document.getElementById('museums-container').innerHTML = '<p class="text-center">Museum tidak ditemukan.</p>';
                 }
             } catch (error) {
-                console.error('Error:', error);
-                errorMessage.textContent = 'Gagal memuat data museum. Pastikan server Laravel berjalan di http://localhost:8000';
+                errorMessage.textContent = 'Gagal memuat data API.';
                 errorMessage.style.display = 'block';
             } finally {
                 loading.style.display = 'none';
             }
         }
 
-        function displayMuseums(museums) {
+        function displayMuseums() {
             const container = document.getElementById('museums-container');
-            let html = '';
+            const totalPages = Math.ceil(filteredMuseums.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const museumsToDisplay = filteredMuseums.slice(startIndex, startIndex + itemsPerPage);
 
-            museums.forEach((museum, index) => {
+            let html = '';
+            museumsToDisplay.forEach((museum, index) => {
                 html += `
-                    <div class="market_section_${index + 2} mb-4">
+                    <div class="market_section_${index + 2} mb-5">
                         <div class="reservasi-flex">
                             <div class="reservasi-image">
                                 <img src="${museum.foto_url || '{{ asset('images/greyart.jpeg') }}'}" 
-                                     alt="${museum.nama_museum}"
-                                     style="width: 100%; height: 250px; object-fit: cover; border-radius: 10px;"
+                                     style="width: 100%; height: 250px; object-fit: cover; border-radius: 12px;"
                                      onerror="this.src='{{ asset('images/greyart.jpeg') }}'">
                             </div>
                             <div class="reservasi-text">
-                                <h3 style="color: #333; font-weight: 600; margin-bottom: 15px;">${museum.nama_museum}</h3>
-                                <p style="margin-bottom: 10px; color: #666;">${museum.deskripsi || 'Deskripsi tidak tersedia.'}</p>
-                                <p style="margin-bottom: 5px;"><strong><i class="fa fa-map-marker"></i> Alamat:</strong> ${museum.alamat || 'Tidak tersedia'}</p>
-                                <p style="margin-bottom: 5px;"><strong><i class="fa fa-clock-o"></i> Jam Operasional:</strong> ${museum.jam_operasional || 'Tidak tersedia'}</p>
-                                <p style="margin-bottom: 5px;"><strong><i class="fa fa-ticket"></i> Harga Tiket:</strong> ${museum.harga_tiket || 'Tidak tersedia'}</p>
-                                <p style="margin-bottom: 5px;"><strong><i class="fa fa-location-arrow"></i> Koordinat:</strong> ${museum.latitude}, ${museum.longitude}</p>
+                                <h3 style="color: #333; font-weight: 700; margin-bottom:15px;">${museum.nama_museum}</h3>
+                                <p style="color: #555; line-height: 1.6;">${museum.deskripsi || 'Deskripsi belum tersedia.'}</p>
+                                <p style="margin-top:10px;"><strong><i class="fa fa-map-marker"></i> Alamat:</strong> ${museum.alamat || '-'}</p>
+                                <p><strong><i class="fa fa-clock-o"></i> Jam Operasional:</strong> ${museum.jam_operasional || '-'}</p>
+                                <p><strong><i class="fa fa-ticket"></i> Harga Tiket:</strong> ${museum.harga_tiket || '-'}</p>
                             </div>
                         </div>
                         <div class="seemore_bt_reservasi">
-                            <a href="#" onclick="bookTicket(${museum.id}, '${museum.nama_museum}'); return false;">Pesan Sekarang</a>
+                            <a href="#" onclick="openGoogleMaps(${museum.latitude}, ${museum.longitude}); return false;">
+                                <i class="fa fa-location-arrow"></i> Petunjuk Lokasi
+                            </a>
                         </div>
                     </div>
                 `;
             });
-
             container.innerHTML = html;
+            displayPagination(totalPages);
         }
 
-        function bookTicket(museumId, museumName) {
-            alert(`Fitur pemesanan tiket untuk ${museumName} akan segera hadir!\n\nID Museum: ${museumId}`);
-            // Nanti bisa redirect ke halaman reservasi
-            // window.location.href = '{{ route("reservasi") }}?museum=' + museumId;
+        function displayPagination(totalPages) {
+            const paginationContainer = document.getElementById('pagination-container');
+            if (totalPages <= 1) {
+                paginationContainer.style.display = 'none';
+                return;
+            }
+            paginationContainer.style.display = 'flex';
+
+            let html = `
+                <button class="pagination-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="fa fa-chevron-left"></i> Sebelumnya
+                </button>
+                <div class="page-numbers">
+            `;
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    html += `<div class="page-number ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</div>`;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    html += '<span style="color:#764ba2">...</span>';
+                }
+            }
+
+            html += `
+                </div>
+                <div class="pagination-info"> Hal. ${currentPage} / ${totalPages} </div>
+                <button class="pagination-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    Berikutnya <i class="fa fa-chevron-right"></i>
+                </button>
+            `;
+            paginationContainer.innerHTML = html;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            displayMuseums();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function searchMuseum(event) {
             event.preventDefault();
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const term = document.getElementById('searchInput').value.toLowerCase().trim();
+            filteredMuseums = allMuseums.filter(m => m.nama_museum.toLowerCase().includes(term));
+            currentPage = 1;
+            displayMuseums();
+        }
 
-            if (!searchTerm) {
-                displayMuseums(allMuseums);
-                return;
-            }
-
-            const filtered = allMuseums.filter(museum => 
-                museum.nama_museum.toLowerCase().includes(searchTerm) ||
-                (museum.alamat && museum.alamat.toLowerCase().includes(searchTerm)) ||
-                (museum.deskripsi && museum.deskripsi.toLowerCase().includes(searchTerm))
-            );
-
-            if (filtered.length > 0) {
-                displayMuseums(filtered);
-            } else {
-                document.getElementById('museums-container').innerHTML = 
-                    '<p class="text-center">Tidak ada museum yang cocok dengan pencarian "' + searchTerm + '"</p>';
-            }
+        function openGoogleMaps(lat, lng) {
+            const url = `https://www.google.com/maps?q=${lat},${lng}`;
+            window.location.href = url; // Terbuka di tab yang sama
         }
     </script>
 </body>
