@@ -37,8 +37,6 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('museum') }}">Museum</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('lokasi') }}">Lokasi</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('tiket.saya') }}">Tiket Saya</a></li>
-                    </ul>
-                    <a href="{{ route('login') }}" class="btn btn-brand ms-lg-3">LOG IN</a>
                 </div>
             </nav>
         </div>

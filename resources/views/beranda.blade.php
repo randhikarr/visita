@@ -51,8 +51,6 @@
                         <a class="nav-link" href="{{ route('tiket.saya') }}">Tiket Saya</a>
                      </li>
                   </ul>
-                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('login') }}">LOG IN</a>
                      </li>
                   <form class="form-inline my-2 my-lg-0">
                   </form>
