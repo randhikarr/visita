@@ -112,8 +112,6 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('museum') }}">Museum</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('lokasi') }}">Lokasi</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('tiket.saya') }}">Tiket Saya</a></li>
-                    </ul>
-                    <a href="{{ route('login') }}" class="btn btn-brand ms-lg-3">LOG IN</a>
                 </div>
             </nav>
         </div>
@@ -500,16 +498,20 @@
         // Open Google Maps with directions
         function openGoogleMaps(lat, lng, name) {
             // If user location is available, show directions from user to museum
-            if (userLocation) {
-                // Google Maps directions URL
-                const url = `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${lat},${lng}&travelmode=driving`;
-                window.open(url, '_blank');
-            } else {
-                // Just open the location on Google Maps
-                const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-                window.open(url, '_blank');
+            let url;
+                // If user location is available, show directions from user to museum
+                if (userLocation) {
+                    // Google Maps directions URL (Gunakan format https://www.google.com/maps/dir/)
+                    url = `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${lat},${lng}&travelmode=driving`;
+                } else {
+                    // Just open the location on Google Maps (Gunakan format https://www.google.com/maps/search/)
+                    url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+                }
+
+                // MENGGANTI INI: window.open(url, '_blank');
+                // MENJADI INI agar terbuka di tab yang sama:
+                window.location.href = url;
             }
-        }
 
         // Initialize map when page loads
         document.addEventListener('DOMContentLoaded', initMap);
