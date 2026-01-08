@@ -1588,6 +1588,7 @@ textarea#comment.massage-bt::placeholder {
     background-color: #2c2c2c;
     background-size: 100%;
     padding: 90px 0px;
+    margin-top: 10%;
 }
 
 .useful_text {

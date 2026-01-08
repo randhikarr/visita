@@ -99,7 +99,7 @@
                   <div class="carousel-item">
                      <div class="row">
                         <div class="col-md-6">
-                           <div class="banner_img"><img src="images/banner-img.png"></div>
+                           <div class="banner_img"><img src="images/frame 33.png"></div>
                         </div>
                         <div class="col-md-6">
                            <div class="banner_taital_main">
