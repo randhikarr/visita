@@ -38,6 +38,15 @@ Route::get('/museum/greyart', function () {
     return view('pages/greyart');
 })->name('greyart');
 
+Route::get('/museum/sribaduga', function () {
+    return view('pages/sribaduga');
+})->name('sribaduga');
+
+Route::get('/museum/afrika', function () {
+    return view('pages/afrika');
+})->name('afrika');
+
+
 // Halaman Reservasi
 Route::get('/reservasi', function () {
     return view('reservasi');

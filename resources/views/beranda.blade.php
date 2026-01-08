@@ -138,14 +138,14 @@
                                  <figure><img src="images/sribaduga.jpg"></figure>
                               </div>
                               <h3 class="materials_text">Museum Sri Baduga</h3>
-                              <div class="readmore_btn active"><a href="#">Lihat Detail</a></div>
+                              <div class="readmore_btn active"><a href="{{ route('sribaduga') }}">Lihat Detail</a></div>
                            </div>
                            <div class="col-md-4">
                               <div class="hover01 column">
                                  <figure><img src="images/asiaafrika2.jpeg"></figure>
                               </div>
                               <h3 class="materials_text">Museum Asia Afrika</h3>
-                              <div class="readmore_btn"><a href="#">Lihat Detail</a></div>
+                              <div class="readmore_btn"><a href="{{ route('afrika') }}">Lihat Detail</a></div>
                            </div>
                         </div>
                      </div>
